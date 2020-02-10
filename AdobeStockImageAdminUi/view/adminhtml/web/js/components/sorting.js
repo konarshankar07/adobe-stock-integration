@@ -3,9 +3,8 @@
  * See COPYING.txt for license details.
  */
 define([
-    'uiElement',
-    'uiRegistry'
-], function (Element, uiRegistry) {
+    'uiElement'
+], function (Element) {
     'use strict';
 
     return Element.extend({
@@ -23,8 +22,12 @@ define([
                 selectedOption: true,
                 applied: true
             },
+            imports: {
+                preparedOptions: '${ $.columnsProvider }:elems'
+            },
             modules: {
-                preview: '${ $.previewProvider }'
+                preview: '${ $.previewProvider }',
+                columns: '${ $.columnsProvider }'
             },
             exports: {
                 applied: '${ $.provider }:params.sorting'
@@ -35,8 +38,6 @@ define([
          * @inheritdoc
          */
         initObservable: function () {
-            this.preparedOptions();
-
             return this._super()
                 .observe([
                     'applied',
@@ -47,11 +48,9 @@ define([
         /**
          * Prepared sort order options
          */
-        preparedOptions: function () {
-            var columns = uiRegistry.get('index = adobe_stock_images_columns');
-
-            if (columns && columns.elems().length > 0) {
-                columns.elems().map(function (column) {
+        preparedOptions: function (columns) {
+            if (columns && columns.length > 0) {
+                columns.map(function (column) {
                     if (column.sortable === true) {
                         this.options.push({
                             value: column.index,
@@ -70,7 +69,7 @@ define([
                 field: this.selectedOption(),
                 direction: 'desc'
             });
-            this.preview().hide();
+            //this.preview().hide();
         }
     });
 });
